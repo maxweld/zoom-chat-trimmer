@@ -2,8 +2,9 @@
 import { ref } from "vue";
 import divideChatLines from "../composables/useDivideChatLines.js";
 import generateTrimmedFileName from "../composables/useGenerateTrimmedFileName.js";
-import handlePrefix from "../composables/usePrefixAllNames.js";
+import handlePrefix from "../composables/useHandlePrefix.js";
 import mergeLines from "../composables/useMergeLines.js";
+import useLocalStorage from "../composables/useLocalStorage.js";
 
 const inputFileOpts = {
   types: [
@@ -32,8 +33,8 @@ let fileHandle;
 let outputFile;
 
 const trimOption = ref("remove-all");
-const fullName = ref();
-const shortName = ref();
+const fullName = ref(useLocalStorage("zct-fullname"));
+const shortName = ref(useLocalStorage("zct-shortname"));
 const lineNumbers = ref(false);
 
 const handleSubmit = async function () {
@@ -47,17 +48,15 @@ const handleSubmit = async function () {
   let fileStream = "";
   if (trimOption.value === "remove-all") {
     textLines.forEach((el) => (el.prefix = ""));
-    // fileStream = textLines.reduce(
-    //   (accumulator, currentline) => accumulator.concat(currentline.text, "\n"),
-    //   ""
-    // );
   } else if (trimOption.value === "all-names") {
     textLines = handlePrefix(textLines);
   } else if (trimOption.value === "long-name") {
     textLines = handlePrefix(textLines, fullName.value);
-    console.log(textLines);
+    useLocalStorage("zct-fullname", "set", fullName.value);
   } else if (trimOption.value === "short-name") {
     textLines = handlePrefix(textLines, fullName.value, shortName.value);
+    useLocalStorage("zct-fullname", "set", fullName.value);
+    useLocalStorage("zct-shortname", "set", shortName.value);
   }
   fileStream = mergeLines(textLines, lineNumbers.value);
 

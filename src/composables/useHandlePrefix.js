@@ -7,12 +7,10 @@ export default function (dividedChat, fullName, shortName) {
   //   }
   // ]
   //
-  console.log(fullName, shortName);
   return dividedChat.map((el) => {
     const nameFrom = el.prefix.indexOf(" From ");
     const nameTo = el.prefix.indexOf("To Everyone:");
     let prefix = el.prefix.substring(nameFrom + 6, nameTo).trim();
-    console.log(prefix);
 
     if (shortName) {
       if (fullName === prefix) {
